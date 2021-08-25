@@ -11,4 +11,4 @@ RUN pipenv install
 
 COPY . /bot
 
-CMD ["pipenv", "run", "python", "-m", "bot"]
+CMD ["pipenv", "run", "start"]
