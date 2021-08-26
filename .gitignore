@@ -1,2 +1,4 @@
 .idea/
 .env
+
+src/save_data.json
