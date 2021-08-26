@@ -7,7 +7,7 @@ RUN pip install pipenv
 COPY Pipfile /bot
 COPY Pipfile.lock /bot
 
-RUN pipenv install
+RUN pipenv install --system --deploy
 
 COPY . /bot
 
