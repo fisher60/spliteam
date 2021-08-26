@@ -5,7 +5,7 @@ from typing import Iterator, NoReturn
 
 from discord import AllowedMentions
 
-from bot import cogs
+from . import cogs
 from .bot import TeamBot
 from .settings import COMMAND_PREFIX, TOKEN
 
@@ -31,6 +31,7 @@ def _get_cogs() -> Iterator[str]:
 
 if __name__ == "__main__":
     bot = TeamBot(command_prefix=COMMAND_PREFIX, allowed_mentions=AllowedMentions(everyone=False))
+
     for cog in _get_cogs():
         bot.load_extension(cog)
 

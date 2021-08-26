@@ -5,7 +5,7 @@ from discord import VoiceChannel
 from discord.ext.commands import Bot, Context, Cog, group
 
 
-from bot.settings import SAVE_DATA_FILE
+from ..settings import SAVE_DATA_FILE
 
 
 class Split(Cog):
