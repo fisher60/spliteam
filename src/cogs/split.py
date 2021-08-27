@@ -1,5 +1,6 @@
 import json
 from dataclasses import dataclass
+from typing import Any
 
 from discord import VoiceChannel
 from discord.ext.commands import Bot, Context, Cog, group, command
@@ -39,7 +40,8 @@ class SplitConfig:
         with open(SAVE_DATA_FILE, "w") as f:
             json.dump(vars(self), f)
 
-    def __setattr__(self, key: str, value) -> None:
+    def __setattr__(self, key: str, value: Any) -> None:
+        """Over write the set attr to also write out changes to a file."""
         self.__dict__[key] = value
         self.__write_file()
 
