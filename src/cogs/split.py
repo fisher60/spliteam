@@ -3,8 +3,8 @@ import random
 from dataclasses import dataclass, asdict
 from typing import Any, Optional
 
-from discord import VoiceChannel, Embed, Forbidden
-from discord.ext.commands import Bot, Context, Cog, group, BadArgument, CommandError, command
+from discord import VoiceChannel, Embed, Forbidden, Role, AllowedMentions
+from discord.ext.commands import Bot, Context, Cog, group, BadArgument, CommandError, command, MissingPermissions
 
 from ..settings import SAVE_DATA_FILE, EMBED_COLOR
 
@@ -17,6 +17,7 @@ class SplitConfig:
     When a value is updated, this will be written to the file.
     """
     lobby_channel_id: Optional[int] = None
+    captain_role_id: Optional[int] = None
     team_one_channel_id: Optional[int] = None
     team_two_channel_id: Optional[int] = None
     minimum_team_size: int = 3
@@ -57,6 +58,17 @@ class Split(Cog):
         self.bot = bot
         self.data = SplitConfig()
 
+    def cog_check(self, ctx: Context) -> bool:
+        if ctx.author.guild_permissions.administrator:
+            return True
+
+        if self.data.captain_role_id:
+            captain_role = ctx.guild.get_role(self.data.captain_role_id)
+            if captain_role in ctx.author.roles:
+                return True
+
+        raise MissingPermissions("User doesn't have Admin permissions or the Captain role.")
+
     @property
     def lobby_channel(self) -> Optional[VoiceChannel]:
         """Get the channel id from the settings and construct the VoiceChannel object if one is set."""
@@ -75,7 +87,7 @@ class Split(Cog):
         if self.data.team_two_channel_id:
             return self.bot.get_channel(self.data.team_two_channel_id)
 
-    @group(aliases=["settings"])
+    @group(aliases=["settings", "conf"])
     async def config(self, ctx: Context):
         """Display the current config."""
 
@@ -92,6 +104,9 @@ class Split(Cog):
             embed.add_field(name="Team Two", value=team_two.mention if team_two else "Not Configured")
 
             embed.add_field(name="Minimum Team Size", value=str(self.data.minimum_team_size))
+
+            role = ctx.guild.get_role(self.data.captain_role_id)
+            embed.add_field(name="Captain Role", value=role.mention if role else "Not Configured")
 
             await ctx.send(embed=embed)
 
@@ -129,6 +144,12 @@ class Split(Cog):
 
         self.data.minimum_team_size = min_team_size
         await ctx.send(f"> Minimum team size set to {min_team_size}", delete_after=5)
+
+    @config.command(aliases=["cap", "leader", "role"])
+    async def captain_role(self, ctx: Context, role: Role) -> None:
+        """Set the captain role."""
+        self.data.captain_role_id = role.id
+        await ctx.send(f"> Set captain role to {role.mention}", delete_after=5, allowed_mentions=AllowedMentions(roles=False))
 
     @command()
     async def split(self, ctx: Context) -> None:
