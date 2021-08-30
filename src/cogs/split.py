@@ -22,7 +22,7 @@ class SplitConfig:
     team_two_channel_id: Optional[int] = None
     minimum_team_size: int = 3
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.__ensure_file_exits()
         self.__sync_with_file()
 
@@ -32,7 +32,7 @@ class SplitConfig:
             with open(SAVE_DATA_FILE, "+w") as f:
                 json.dump(asdict(self), f)
 
-    def __sync_with_file(self):
+    def __sync_with_file(self) -> None:
         """Sync this dataclass with the file content"""
         with open(SAVE_DATA_FILE) as f:
             data = json.loads(f.read())
@@ -88,7 +88,7 @@ class Split(Cog):
             return self.bot.get_channel(self.data.team_two_channel_id)
 
     @group(aliases=["settings", "conf"])
-    async def config(self, ctx: Context):
+    async def config(self, ctx: Context) -> None:
         """Display the current config."""
 
         if not ctx.subcommand_passed:
@@ -131,7 +131,7 @@ class Split(Cog):
     @lobby.error
     @team_two.error
     @team_one.error
-    async def channel_error(self, ctx: Context, error: CommandError):
+    async def channel_error(self, ctx: Context, error: CommandError) -> None:
         if isinstance(error, BadArgument):
             await ctx.send("> Please make sure you are tagging a **Voice Channel**.")
 
