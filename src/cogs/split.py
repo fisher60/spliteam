@@ -134,6 +134,8 @@ class Split(Cog):
     async def channel_error(self, ctx: Context, error: CommandError) -> None:
         if isinstance(error, BadArgument):
             await ctx.send("> Please make sure you are tagging a **Voice Channel**.")
+        else:
+            raise error
 
     @config.command(aliases=["min_size", "min"])
     async def minimum_team_size(self, ctx: Context, min_team_size: int) -> None:
