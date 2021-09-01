@@ -11,5 +11,4 @@ SAVE_DATA_FILE = setting("SAVE_DATA_FILE", default=Path.cwd() / "save_data.json"
 
 EMBED_COLOR = Color.orange()
 
-# TODO change this back
-MAX_TEAM_SIZE = setting("MAX_TEAM_SIZE", default=3, _type=int)
+MAX_TEAM_SIZE = setting("MAX_TEAM_SIZE", default=6, _type=int)
