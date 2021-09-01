@@ -174,6 +174,7 @@ class Split(Cog):
         # This list is generated from the discord.py cache.
         # This means if the user has been in the channel since the bot has come online,
         # They will not be inside this list.
+        assert self.lobby_channel is not None
         lobby_members = self.lobby_channel.members
 
         if len(lobby_members) // 2 < self.data.minimum_team_size:
