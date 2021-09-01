@@ -2,3 +2,4 @@
 .env
 
 src/save_data.json
+__pycache__/
