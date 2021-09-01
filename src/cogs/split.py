@@ -3,7 +3,7 @@ import random
 from dataclasses import dataclass, asdict
 from typing import Any, Optional
 
-from discord import VoiceChannel, Embed, Forbidden, Role, AllowedMentions
+from discord import VoiceChannel, Embed, Forbidden, Role, AllowedMentions, HTTPException
 from discord.ext.commands import Bot, Context, Cog, group, BadArgument, CommandError, command, MissingPermissions
 
 from ..settings import SAVE_DATA_FILE, EMBED_COLOR
