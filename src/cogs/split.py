@@ -190,15 +190,21 @@ class Split(Cog):
         embed.add_field(name="__**Team 2**__", value='\n'.join([user.mention for user in team_two]))
         await ctx.send(embed=embed)
 
-        try:
-            for member in team_one:
-                await member.move_to(self.team_one_channel, reason="Team split")
+        teams = (team_one, team_two)
+        channels = (self.team_one_channel, self.team_two_channel)
 
-            for member in team_two:
-                await member.move_to(self.team_two_channel, reason="Team split")
-        except Forbidden:
-            await ctx.send("> It feels like I don't have the power to move people. Missing Permissions.")
-            return
+        for team, channel in zip(teams, channels):
+            for member in team:
+                try:
+                    await member.move_to(channel, reason="Team split")
+                except Forbidden:
+                    await ctx.send("> It feels like I don't have the power to move people. Missing Permissions.")
+                    return
+                except HTTPException as e:
+                    if e.code == 40032: # target user not connected to voice
+                        pass
+                    else:
+                        raise e
 
 
 def setup(bot: Bot) -> None:
