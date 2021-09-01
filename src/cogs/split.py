@@ -6,7 +6,7 @@ from typing import Any, Optional
 from discord import VoiceChannel, Embed, Forbidden, Role, AllowedMentions, HTTPException
 from discord.ext.commands import Bot, Context, Cog, group, BadArgument, CommandError, command, MissingPermissions
 
-from ..settings import SAVE_DATA_FILE, EMBED_COLOR
+from ..settings import SAVE_DATA_FILE, EMBED_COLOR, MAX_TEAM_SIZE
 
 
 @dataclass
@@ -141,7 +141,7 @@ class Split(Cog):
     async def minimum_team_size(self, ctx: Context, min_team_size: int) -> None:
         """Set the minimum players per team."""
         if min_team_size <= 0:
-            await ctx.send("> Idk chief, this seems kinda weird. (*Please chose a number greater than 0*()", delete_after=5)
+            await ctx.send("> Idk chief, this seems kinda weird. (*Please chose a number greater than 0*)", delete_after=5)
             return
 
         self.data.minimum_team_size = min_team_size
@@ -174,22 +174,33 @@ class Split(Cog):
         assert self.lobby_channel is not None
         lobby_members = self.lobby_channel.members
 
-        if len(lobby_members) // 2 < self.data.minimum_team_size:
-            await ctx.send("> There is not enough members to meet the minimum team size", delete_after=5)
-            return
-
         # Our randomization strategy is using random.shuffle then splitting the list in the middle
         random.shuffle(lobby_members)
 
-        team_one, team_two = lobby_members[len(lobby_members) // 2:], lobby_members[:len(lobby_members) // 2]
+        if len(lobby_members) >= 2 * self.data.minimum_team_size:
+            num_players = min(len(lobby_members), 2 * MAX_TEAM_SIZE)
+            team_one = lobby_members[:num_players//2]
+            team_two = lobby_members[num_players//2:num_players]
+            bench = lobby_members[num_players:]
+        elif len(lobby_members) >= self.data.minimum_team_size:
+            num_players = min(len(lobby_members), MAX_TEAM_SIZE)
+            team_one = lobby_members[:num_players]
+            team_two = []
+            bench = lobby_members[num_players:]
+        else:
+            await ctx.send("> There are not enough members to meet the minimum team size", delete_after=5)
+            return
 
         embed = Embed(title="Teams", colour=EMBED_COLOR)
-        embed.add_field(name="__**Team 1**__", value='\n'.join([user.mention for user in team_one]))
-        embed.add_field(name="__**Team 2**__", value='\n'.join([user.mention for user in team_two]))
+        embed.add_field(name="__**Team 1**__", value='\n'.join(user.mention for user in team_one))
+        if team_two:
+            embed.add_field(name="__**Team 2**__", value='\n'.join(user.mention for user in team_two))
+        if bench:
+            embed.add_field(name="__**Bench**__", value='\n'.join(user.mention for user in bench))
         await ctx.send(embed=embed)
 
-        teams = (team_one, team_two)
-        channels = (self.team_one_channel, self.team_two_channel)
+        teams = (team_one, team_two, bench)
+        channels = (self.team_one_channel, self.team_two_channel, self.lobby_channel)
 
         for team, channel in zip(teams, channels):
             for member in team:
