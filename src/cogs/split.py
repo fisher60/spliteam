@@ -174,7 +174,6 @@ class Split(Cog):
         assert self.lobby_channel is not None
         lobby_members = self.lobby_channel.members
 
-        # Our randomization strategy is using random.shuffle then splitting the list in the middle
         random.shuffle(lobby_members)
 
         if len(lobby_members) >= 2 * self.data.minimum_team_size:
