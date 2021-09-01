@@ -170,10 +170,7 @@ class Split(Cog):
             await ctx.send(f"> You must configure the following settings before a split: {', '.join(invalid_settings)}", delete_after=5)
             return
 
-        # FIXME: Find the underlying api request to get this info.
-        # This list is generated from the discord.py cache.
-        # This means if the user has been in the channel since the bot has come online,
-        # They will not be inside this list.
+        # FIXME: This list may be incomplete. See issue #5
         assert self.lobby_channel is not None
         lobby_members = self.lobby_channel.members
 
