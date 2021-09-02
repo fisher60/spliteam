@@ -17,5 +17,3 @@ except KeyError:
     raise EnvironmentError(f"invalid LOG_LEVEL {LOG_LEVEL!r}")
 
 logging.basicConfig(level=level)
-
-logging.warning(f"level: {LOG_LEVEL} {level}")
