@@ -1,2 +1,5 @@
 .idea/
 .env
+
+/save_data.json
+__pycache__/
